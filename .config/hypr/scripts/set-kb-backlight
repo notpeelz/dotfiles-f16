@@ -1,0 +1,53 @@
+#!/usr/bin/bash
+
+set -euo pipefail
+
+if [[ ! "$#" -eq 3 ]]; then
+  echo "Invalid parameter count" >&2
+  exit 1
+fi
+
+vid="$1"
+pid="$2"
+value="$3"
+
+validate_hex() {
+  if [[ ! "$1" =~ ^[a-zA-Z0-9]+$ ]]; then
+    echo "Invalid value: $1" >&2
+    exit 1
+  fi
+}
+
+validate_hex "${vid}"
+validate_hex "${pid}"
+
+values_dir="${XDG_RUNTIME_DIR}/set-kb-backlight"
+value_file="${values_dir}/${vid}-${pid}"
+
+mkdir -p "${values_dir}"
+
+get_backlight() {
+  qmk_hid --vid "${vid}" --pid "${pid}" via --backlight \
+    | rg --pcre2 'Brightness: (\d+)%' --replace='$1'
+}
+
+set_backlight() {
+  qmk_hid --vid "${vid}" --pid "${pid}" via --backlight "$1"
+}
+
+if [[ "${value}" =~ ^[0-9]+$ ]]; then
+  [[ ! -e "${value_file}" ]] && get_backlight > "${value_file}"
+  set_backlight "${value}"
+elif [[ "${value}" == "restore" ]]; then
+  if [[ -f "${value_file}" ]]; then
+    old_value="$(<"${value_file}")"
+    rm "${value_file}"
+    set_backlight "${old_value}"
+  else
+    echo "No value to restore" >&2
+    exit 1
+  fi
+else
+  echo "Invalid value: ${value}" >&2
+  exit 1
+fi
