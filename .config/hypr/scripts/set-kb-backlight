@@ -32,7 +32,13 @@ get_backlight() {
 }
 
 set_backlight() {
-  qmk_hid --vid "${vid}" --pid "${pid}" via --backlight "$1"
+  local value="$1"
+  if (( $1 > 0 && $1 <= 33 )); then
+    # the f16 qmk firmware turns off the keyboard backlight at values
+    # lower than 34.
+    value="34"
+  fi
+  qmk_hid --vid "${vid}" --pid "${pid}" via --backlight "${value}"
 }
 
 if [[ "${value}" =~ ^[0-9]+$ ]]; then
