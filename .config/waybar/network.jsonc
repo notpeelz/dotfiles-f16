@@ -1,0 +1,29 @@
+{
+  "network#wifi": {
+    "interface": "wl*",
+    "rfkill": true,
+    "format-icons": {
+      "wifi": ["󰤟", "󰤢", "󰤥", "󰤨"],
+      "disabled": "󰤮",
+      "disconnected": "󰤯",
+      "linked": "󰤯",
+    },
+    "format": "{icon}",
+    "format-wifi": "{icon} {essid}",
+    "tooltip-format": "{ifname}",
+    "tooltip-format-wifi": "{ifname}\nSignal: {signaldBm} dBm ({signalStrength}%)\nFrequency: {frequency} GHz",
+    "tooltip-format-disabled": "Disabled",
+  },
+
+  "network#ethernet": {
+    "interface": "en*",
+    "rfkill": false,
+    "format-icons": {
+      "disconnected": "",
+      "ethernet": "",
+      "linked": "",
+    },
+    "format": "{icon}",
+    "tooltip-format": "{ifname}",
+  },
+}
